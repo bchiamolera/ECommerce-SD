@@ -1,4 +1,4 @@
-package org.furb.serviconotificacao.config;
+package org.furb.serviconotafiscal.config;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;

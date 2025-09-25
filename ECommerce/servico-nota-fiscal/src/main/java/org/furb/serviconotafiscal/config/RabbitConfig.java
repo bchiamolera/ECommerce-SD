@@ -1,4 +1,4 @@
-package org.furb.serviconotificacao.config;
+package org.furb.serviconotafiscal.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -12,7 +12,7 @@ public class RabbitConfig {
     public static final String EXCHANGE_PEDIDO = "exchange.pedido";
 
     // Filas
-    public static final String FILA_NOTIFICACAO = "fila.notificacao";
+    public static final String FILA_NOTA_FISCAL = "fila.nota_fiscal";
     public static final String FILA_RETRY = "fila.retry";
     public static final String FILA_DLQ = "fila.dlq";
 
@@ -22,7 +22,6 @@ public class RabbitConfig {
 
     // Routing Keys
     public static final String RK_PEDIDO_CRIADO = "pedido.criado";
-    public static final String RK_PEDIDO_ENVIADO = "pedido.enviado";
     public static final String RK_PEDIDO_RETRY = "pedido.retry";
 
     // TTL
@@ -36,25 +35,18 @@ public class RabbitConfig {
 
     // --- Configuração da Fila Principal de Notificação ---
     @Bean
-    public Queue notificacaoQueue() {
-        return QueueBuilder.durable(FILA_NOTIFICACAO)
+    public Queue notaFiscalQueue() {
+        return QueueBuilder.durable(FILA_NOTA_FISCAL)
                 .withArgument("x-dead-letter-exchange", RETRY_DLX)
                 .withArgument("x-dead-letter-routing-key", RK_PEDIDO_RETRY)
                 .build();
     }
 
     @Bean
-    public Binding notificacaoCriadoBinding(TopicExchange pedidoExchange, Queue notificacaoQueue) {
-        return BindingBuilder.bind(notificacaoQueue)
+    public Binding notaFiscalQueueBinding(TopicExchange pedidoExchange, Queue notaFiscalQueue) {
+        return BindingBuilder.bind(notaFiscalQueue)
                 .to(pedidoExchange)
                 .with(RK_PEDIDO_CRIADO);
-    }
-
-    @Bean
-    public Binding notificacaoEnviadoBinding(TopicExchange pedidoExchange, Queue notificacaoQueue) {
-        return BindingBuilder.bind(notificacaoQueue)
-                .to(pedidoExchange)
-                .with(RK_PEDIDO_ENVIADO);
     }
 
     // --- Configuração do Fluxo de Retry ---
@@ -103,4 +95,5 @@ public class RabbitConfig {
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
+
 }
