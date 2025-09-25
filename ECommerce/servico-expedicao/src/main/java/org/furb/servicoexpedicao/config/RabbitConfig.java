@@ -23,8 +23,6 @@ public class RabbitConfig {
     // Routing Keys
     public static final String RK_PEDIDO_CRIADO = "pedido.criado";
     public static final String RK_PEDIDO_RETRY = "pedido.retry";
-    public static final String RK_PEDIDO_DLX = "pedido.dlx";
-
 
     // TTL
     private static final Integer TTL_RETRY_FILA = 10000; // 10 segundos
@@ -90,7 +88,7 @@ public class RabbitConfig {
         // Roteia qualquer mensagem nesta exchange para a fila final
         return BindingBuilder.bind(finalDlq)
                 .to(finalDlx)
-                .with(RK_PEDIDO_DLX);
+                .with("#");
     }
 
     @Bean
