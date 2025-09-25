@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: servico-estoque
+
+  rabbitmq:
+    addresses: amqps://jackal.rmq.cloudamqp.com:5671
+    username: dskpvixd
+    password: 391V_06xBiJU4u3UbqzJFW818Do11sMy
+    virtual-host: dskpvixd
+    ssl:
+      enabled: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+
+  datasource:
+    url: jdbc:h2:mem:estoque;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+
+server:
+  port: 8083

@@ -1,4 +1,4 @@
-package org.furb.servicopedido.model;
+package org.furb.servicoestoque.model;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.furb.serviconotificacao.config;
+package org.furb.servicoestoque.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -12,17 +12,18 @@ public class RabbitConfig {
     public static final String EXCHANGE_PEDIDO = "exchange.pedido";
 
     // Filas
-    public static final String FILA_NOTIFICACAO = "fila.notificacao";
-    public static final String FILA_RETRY_NOTIFICACAO = "fila.retry";
-    public static final String FILA_DLQ_NOTIFICACAO = "fila.dlq";
+    public static final String FILA_ESTOQUE = "fila.estoque";
+    public static final String FILA_RETRY = "fila.retry";
+    public static final String FILA_DLQ = "fila.dlq";
 
     // Exchanges DLX
-    public static final String RETRY_DLX_NOTIFICACAO = "exchange.retry-dlx";
-    public static final String FINAL_DLX_NOTIFICACAO = "exchange.final-dlx";
+    public static final String RETRY_DLX = "exchange.retry-dlx";
+    public static final String FINAL_DLX = "exchange.final-dlx";
 
     // Routing Keys
     public static final String RK_PEDIDO_CRIADO = "pedido.criado";
     public static final String RK_PEDIDO_RETRY = "pedido.retry";
+    public static final String RK_PEDIDO_DLX = "pedido.dlx";
 
     // TTL
     private static final Integer TTL_RETRY_FILA = 10000; // 10 segundos
@@ -33,18 +34,18 @@ public class RabbitConfig {
         return new TopicExchange(EXCHANGE_PEDIDO);
     }
 
-    // --- Configuração da Fila Principal de Notificação ---
+    // --- Configuração da Fila Principal de Estoque ---
     @Bean
-    public Queue notificacaoQueue() {
-        return QueueBuilder.durable(FILA_NOTIFICACAO)
-                .withArgument("x-dead-letter-exchange", RETRY_DLX_NOTIFICACAO)
+    public Queue estoqueQueue() {
+        return QueueBuilder.durable(FILA_ESTOQUE)
+                .withArgument("x-dead-letter-exchange", RETRY_DLX)
                 .withArgument("x-dead-letter-routing-key", RK_PEDIDO_RETRY)
                 .build();
     }
 
     @Bean
-    public Binding notificacaoBinding(TopicExchange pedidoExchange, Queue notificacaoQueue) {
-        return BindingBuilder.bind(notificacaoQueue)
+    public Binding estoqueBinding(TopicExchange pedidoExchange, Queue estoqueQueue) {
+        return BindingBuilder.bind(estoqueQueue)
                 .to(pedidoExchange)
                 .with(RK_PEDIDO_CRIADO);
     }
@@ -52,13 +53,13 @@ public class RabbitConfig {
     // --- Configuração do Fluxo de Retry ---
     @Bean
     public TopicExchange retryDlx() {
-        return new TopicExchange(RETRY_DLX_NOTIFICACAO);
+        return new TopicExchange(RETRY_DLX);
     }
 
     @Bean
     public Queue retryQueue() {
         // A mensagem nesta fila expira após TTL e é enviada para a exchange principal
-        return QueueBuilder.durable(FILA_RETRY_NOTIFICACAO)
+        return QueueBuilder.durable(FILA_RETRY)
                 .withArgument("x-dead-letter-exchange", EXCHANGE_PEDIDO)
                 .withArgument("x-dead-letter-routing-key", RK_PEDIDO_CRIADO) // Volta para a fila original
                 .withArgument("x-message-ttl", TTL_RETRY_FILA)
@@ -75,12 +76,12 @@ public class RabbitConfig {
     // --- Configuração do Fluxo Final de Falha (DLQ) ---
     @Bean
     public TopicExchange finalDlx() {
-        return new TopicExchange(FINAL_DLX_NOTIFICACAO);
+        return new TopicExchange(FINAL_DLX);
     }
 
     @Bean
     public Queue finalDlq() {
-        return new Queue(FILA_DLQ_NOTIFICACAO);
+        return new Queue(FILA_DLQ);
     }
 
     @Bean
@@ -88,7 +89,7 @@ public class RabbitConfig {
         // Roteia qualquer mensagem nesta exchange para a fila final
         return BindingBuilder.bind(finalDlq)
                 .to(finalDlx)
-                .with("#");
+                .with(RK_PEDIDO_DLX);
     }
 
     @Bean
