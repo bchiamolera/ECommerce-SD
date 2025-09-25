@@ -29,7 +29,6 @@ public class NotaFiscalConsumer {
     public static final String FINAL_DLX = "exchange.final-dlx";
 
     // Routing Keys
-    public static final String RK_PEDIDO_CRIADO = "pedido.criado";
     public static final String RK_PEDIDO_FALHA = "pedido.dlx";
 
     private static final Logger log = LoggerFactory.getLogger(NotaFiscalConsumer.class);

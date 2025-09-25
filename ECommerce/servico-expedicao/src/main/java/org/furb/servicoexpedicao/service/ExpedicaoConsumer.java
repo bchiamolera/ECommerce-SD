@@ -41,6 +41,20 @@ public class ExpedicaoConsumer {
     @RabbitListener(queues = FILA_EXPEDICAO)
     public void consumirMensagem(String pedidoJson, Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
     	log.info("Recebida mensagem para expedicao: {}", pedidoJson);
-    	// channel.basicAck(deliveryTag, false);
+
+        try {
+            channel.basicAck(deliveryTag, false);
+            log.info("Mensagem confirmada (ACK) com deliveryTag: {}", deliveryTag);
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(
+                    FINAL_DLX,
+                    RK_PEDIDO_FALHA,
+                    message
+            );
+            // Confirma a mensagem original para removê-la da fila de notificação
+            channel.basicAck(deliveryTag, false);
+            log.info("Mensagem confirmada (ACK) e movida para a DLQ final. DeliveryTag: {}", deliveryTag);
+        }
+
     }
 }
