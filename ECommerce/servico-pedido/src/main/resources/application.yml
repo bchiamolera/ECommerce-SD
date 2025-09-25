@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: service-pedido
+
+  rabbitmq:
+    addresses: amqps://jackal.rmq.cloudamqp.com:5671
+    username: dskpvixd
+    password: 391V_06xBiJU4u3UbqzJFW818Do11sMy
+    virtual-host: dskpvixd
+    ssl:
+      enabled: true
+
+server:
+  port: 8080

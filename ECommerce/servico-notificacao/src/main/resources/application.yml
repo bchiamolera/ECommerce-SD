@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: servico-notificacao
+
+  rabbitmq:
+    addresses: amqps://jackal.rmq.cloudamqp.com:5671
+    username: dskpvixd
+    password: 391V_06xBiJU4u3UbqzJFW818Do11sMy
+    virtual-host: dskpvixd
+    ssl:
+      enabled: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: teste160305@gmail.com
+    password: jpfkkljnkedmslqz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8081
