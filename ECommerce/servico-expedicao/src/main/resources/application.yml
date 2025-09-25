@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: service-expedicao
+
+  rabbitmq:
+    addresses: amqps://jackal.rmq.cloudamqp.com:5671
+    username: dskpvixd
+    password: 391V_06xBiJU4u3UbqzJFW818Do11sMy
+    virtual-host: dskpvixd
+    ssl:
+      enabled: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+
+server:
+  port: 8084
