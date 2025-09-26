@@ -36,24 +36,24 @@ public class ExpedicaoConsumer {
     private static final int TEMPO_EXPEDICAO = 10000;
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
-    private final NotificacaoService notificacaoService;
+    private final ExpedicaoService expedicaoService;
     
-    public ExpedicaoConsumer(RabbitTemplate rabbitTemplate, NotificacaoService notificacaoService) {
+    public ExpedicaoConsumer(RabbitTemplate rabbitTemplate, ExpedicaoService expedicaoService) {
     	this.rabbitTemplate = rabbitTemplate;
     	this.objectMapper = new ObjectMapper();
-    	this.notificacaoService = notificacaoService;
+    	this.expedicaoService = expedicaoService;
     }
 
     @RabbitListener(queues = FILA_EXPEDICAO)
     public void consumirMensagem(String pedidoJson, Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
-    	log.info("Recebida mensagem para expedicao: {}", pedidoJson);
+    	log.info("Recebida mensagem para expedição: {}", pedidoJson);
     	
     	try {
     		Pedido pedido = objectMapper.readValue(pedidoJson, Pedido.class);
     		processarExpedicao(pedido);
     		
-    		notificacaoService.notificarExpedicao(pedido);
-    		log.info("Notificacao de expedicao enviada com sucesso para o pedido: {}", pedidoJson);
+    		expedicaoService.notificarExpedicao(pedido);
+    		log.info("Notificação de expedição enviada com sucesso para o pedido: {}", pedidoJson);
     		
     		// Confirma (ACK) a mensagem explicitamente
             channel.basicAck(deliveryTag, false);
