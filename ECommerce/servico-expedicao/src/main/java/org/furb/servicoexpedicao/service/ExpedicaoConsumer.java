@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.furb.servicoexpedicao.model.Pedido;
 import org.slf4j.Logger;
@@ -33,15 +34,16 @@ public class ExpedicaoConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(ExpedicaoConsumer.class);
     private static final int MAX_RETRIES = 3;
-    private static final int TEMPO_EXPEDICAO = 10000;
+    private static final int TEMPO_EXPEDICAO = 10;
+
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
     private final ExpedicaoService expedicaoService;
     
     public ExpedicaoConsumer(RabbitTemplate rabbitTemplate, ExpedicaoService expedicaoService) {
     	this.rabbitTemplate = rabbitTemplate;
+        this.expedicaoService = expedicaoService;
     	this.objectMapper = new ObjectMapper();
-    	this.expedicaoService = expedicaoService;
     }
 
     @RabbitListener(queues = FILA_EXPEDICAO)
@@ -82,7 +84,7 @@ public class ExpedicaoConsumer {
     
     private void processarExpedicao(Pedido pedido) throws InterruptedException {
     	log.info("Iniciando expedicao para o pedido {}...", pedido.getId());
-    	Thread.sleep(TEMPO_EXPEDICAO);
+        TimeUnit.SECONDS.sleep(TEMPO_EXPEDICAO);
     	log.info("Pedido {} enviado...", pedido.getId());
     }
     

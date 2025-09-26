@@ -51,6 +51,7 @@ public class NotificacaoConsumer {
             Pedido pedido = objectMapper.readValue(pedidoJson, Pedido.class);
             String routingKey = message.getMessageProperties().getReceivedRoutingKey();
             String tipo = routingKey.equals(RK_PEDIDO_CRIADO) ? "criado" : "enviado";
+
             emailService.enviarEmail(pedido, tipo);
             log.info("Notificação enviada com sucesso para o pedido: {}", pedidoJson);
 
